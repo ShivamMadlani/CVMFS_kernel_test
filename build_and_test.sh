@@ -37,9 +37,9 @@ virtme-run \
   --mods auto \
   --memory 1024 \
   --script-sh "
-  echo "=====Entering VM====="
+  echo '=====Entering VM====='
   uname -a
-  echo "=====Running test====="
+  echo '=====Running test====='
   $TEST_SCRIPT
   TEST_RESULT=\$?
   echo \"\$TEST_RESULT\" > $VM_EXIT_FILE
