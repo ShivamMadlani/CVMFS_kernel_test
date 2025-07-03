@@ -1,22 +1,23 @@
 #!/bin/bash
 set -e
 
-CURRENT_DIR="$(pwd)"
 KERNEL_DIR="/root/linux"
-ROOTFS_DIR=""$CURRENT_DIR"/rootfs"
-TEST_SCRIPT="./test.sh"
-VM_EXIT_FILE="./vm_exit_code.txt"
 
+CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TEST_SCRIPT="$CURRENT_DIR/test.sh"
+VM_EXIT_FILE="$CURRENT_DIR/vm_exit_code.txt"
+
+echo $CURRENT_DIR
+echo $KERNEL_DIR
+echo $TEST_SCRIPT
+echo $VM_EXIT_FILE
+exit 0
 # Move to kernel directory
 cd "$KERNEL_DIR"
 
 # Build kernel
 echo '=====Configuring kernel====='
 vng --kconfig 2>/dev/null
-echo "CONFIG_EXT4_FS=y" >> .config
-echo "CONFIG_VIRTIO_BLK=y" >> .config
-yes "" | make olddefconfig
-echo '=====Success====='
 
 echo '=====Building kernel====='
 vng -b
@@ -33,7 +34,8 @@ echo '=====Success====='
 echo '=====Starting VM====='
 virtme-run \
   --kimg "$KERNEL_DIR"/arch/x86/boot/bzImage \
-  --root "$ROOTFS_DIR" \
+  --rw \
+  --pwd \
   --mods auto \
   --memory 1024 \
   --script-sh "

@@ -23,19 +23,19 @@ Install these on the host system
 1. [Linux kernel source](git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git)
 2. [virtme-ng](https://github.com/arighi/virtme-ng)
 3. [qemu](https://www.qemu.org/download/)
-4. debootstrap
 
 ## Setup
 
 1. Create a `config.sh` from config_tempelate and set the values
 
-2. Create Debian rootfs with CVMFS support
+2. Setup CVMFS client if the host is not already configured to read the repository
 ```bash
-sudo ./setup_rootfs.sh
+sudo ./setup_cvmfs_client.sh
 ```
-This uses debootstrap to build a minimal Debian system with CVMFS preinstalled and configured for direct access
 
-3. Build and run test
+3. Update the `KERNEL_DIR` variable inside `build_and_test.sh` script to the location of kernel source
+
+4. Build and run test
 
     a. Manually
     ```bash
