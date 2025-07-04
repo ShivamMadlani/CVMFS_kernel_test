@@ -7,11 +7,6 @@ CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEST_SCRIPT="$CURRENT_DIR/test.sh"
 VM_EXIT_FILE="$CURRENT_DIR/vm_exit_code.txt"
 
-echo $CURRENT_DIR
-echo $KERNEL_DIR
-echo $TEST_SCRIPT
-echo $VM_EXIT_FILE
-exit 0
 # Move to kernel directory
 cd "$KERNEL_DIR"
 
