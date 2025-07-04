@@ -53,6 +53,6 @@ sudo ./setup_cvmfs_client.sh
     git bisect start
     git bisect bad <bad-commit-or-tag>
     git bisect good <good-commit-or-tag>
-    git bisect run ../build_and_test.sh
+    git bisect run /absoulte_path_to/build_and_test.sh
     ```
     This will automatically build and boot each kernel version, and use the exit code of the test binary to determine success or failure.
