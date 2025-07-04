@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+# Change this path to point to your linux source
 KERNEL_DIR="/root/linux"
 
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

@@ -11,7 +11,6 @@ The test is designed to work with `git bisect` to identify kernel regressions th
 - Automates kernel build and test execution in a virtualized environment
 - Uses a static test binary to read a large file from a CVMFS repository
 - Supports `git bisect run` for kernel regression tracking
-- Root filesystem is created via `debootstrap` (not docker or full VM image)
 
 ---
 
@@ -26,16 +25,20 @@ Install these on the host system
 
 ## Setup
 
-1. Create a `config.sh` from config_tempelate and set the values
+Note: Skip to step 3 if host is not already configured to read from the repository
 
-2. Setup CVMFS client if the host is not already configured to read the repository
+1. Create a `config.sh` from config_tempelate and set the values of the repository to read from
+
+2. Setup CVMFS client - one time setup on host
 ```bash
 sudo ./setup_cvmfs_client.sh
 ```
 
-3. Update the `KERNEL_DIR` variable inside `build_and_test.sh` script to the location of kernel source
+3. Clone the linux source on the host machine
 
-4. Build and run test
+4. Update the `KERNEL_DIR` variable inside `build_and_test.sh` script to point to the location of kernel source
+
+5. Build and run test
 
     a. Manually
     ```bash
@@ -48,11 +51,11 @@ sudo ./setup_cvmfs_client.sh
     - Run the test, which opens and reads a file from /cvmfs/...
 
     b. Using `git bisect`
-    To find the first bad kernel commit:
+    To find the first bad kernel commit cd into the kernel source repository:
     ```bash
     git bisect start
-    git bisect bad <bad-commit-or-tag>
-    git bisect good <good-commit-or-tag>
+    git bisect bad <bad-commit-or-tag> (e.g. v5.15)
+    git bisect good <good-commit-or-tag> (e.g. v5.10)
     git bisect run /absoulte_path_to/build_and_test.sh
     ```
     This will automatically build and boot each kernel version, and use the exit code of the test binary to determine success or failure.
