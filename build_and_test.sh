@@ -8,6 +8,8 @@ CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEST_SCRIPT="$CURRENT_DIR/test.sh"
 VM_EXIT_FILE="$CURRENT_DIR/vm_exit_code.txt"
 
+OVERLAY_SETUP="$CURRENT_DIR/overlay.sh"
+
 # Move to kernel directory
 cd "$KERNEL_DIR"
 
@@ -37,6 +39,8 @@ virtme-run \
   --script-sh "
   echo '=====Entering VM====='
   uname -a
+  echo '=====Overlaying /cvmfs====='
+  $OVERLAY_SETUP
   echo '=====Running test====='
   $TEST_SCRIPT
   TEST_RESULT=\$?
