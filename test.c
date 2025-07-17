@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Open file using openat() with current working directory
-    fd = openat(AT_FDCWD, argv[1], O_RDONLY);
+    fd = openat(AT_FDCWD, argv[1], O_RDWR);
     if (fd == -1) {
         fprintf(stderr, "Error opening file '%s': %s\n", argv[1], strerror(errno));
         return 1;
