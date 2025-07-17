@@ -1,35 +1,49 @@
 #!/bin/bash
-set -e
+set -eu
+
+# ------------------
+# IMPORT LOGGER
+# ------------------
+LOGGING="../utils/logging.sh"
+if [ -f "$LOGGING" ]; then
+  source "$LOGGING"
+else
+  echo "[FATAL] Cannot find logger"
+  exit 1
+fi
 
 # Change this path to point to your linux source
 KERNEL_DIR="/root/linux"
 
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TEST_SCRIPT="$CURRENT_DIR/test.sh"
-VM_EXIT_FILE="$CURRENT_DIR/vm_exit_code.txt"
+TEST_SCRIPT="${CURRENT_DIR}/test.sh"
+VM_EXIT_FILE="${CURRENT_DIR}/vm_exit_code.txt"
 
-OVERLAY_SETUP="$CURRENT_DIR/overlay.sh"
+OVERLAY_SETUP="${CURRENT_DIR}/overlay.sh"
+CVMFS_GUEST_SETUP="${CURRENT_DIR}/guest/cvmfs_setup.sh"
 
-# Move to kernel directory
-cd "$KERNEL_DIR"
-
-# Build kernel
-echo '=====Configuring kernel====='
+# Move to kernel directory and Build kernel
+cd "${KERNEL_DIR}"
+log "Configuring and Building kernel"
 vng --kconfig 2>/dev/null
+"${KERNEL_DIR}/scripts/config" --enable CONFIG_EXT4_FS
+make olddefconfig > /dev/null
+vng -b > /dev/null
+success "Kernel built successfully"
 
-echo '=====Building kernel====='
-vng -b
-echo '=====Success====='
-
-cd "$CURRENT_DIR"
+cd "${CURRENT_DIR}"
 
 # Build test binary
-echo '=====Compiling test file====='
+log "Compiling test file"
 gcc -static -o read_test test.c
-echo '=====Success====='
+success "Done"
+
+# Erase disk
+log "Formatting disk"
+mkfs.ext4 -F disk.img > /dev/null
 
 # Run VM with built kernel
-echo '=====Starting VM====='
+log "Starting VM"
 virtme-run \
   --kimg "$KERNEL_DIR"/arch/x86/boot/bzImage \
   --rw \
@@ -39,6 +53,8 @@ virtme-run \
   --script-sh "
   echo '=====Entering VM====='
   uname -a
+  echo '=====Configure cvmfs====='
+  $CVMFS_GUEST_SETUP
   echo '=====Overlaying /cvmfs====='
   $OVERLAY_SETUP
   echo '=====Running test====='
@@ -52,13 +68,13 @@ virtme-run \
 if [ -f "$VM_EXIT_FILE" ]; then
   VM_EXIT_CODE=$(cat "$VM_EXIT_FILE")
   if [ "$VM_EXIT_CODE" -ne 0 ]; then
-    echo "Test failed inside VM, marking as bad commit."
+    error "Test failed inside VM, marking as bad commit."
     exit 1
   else
-    echo "Test passed inside VM, marking as good commit."
+    success "Test passed inside VM, marking as good commit."
     exit 0
   fi
 else
-  echo "VM did not return an exit code file, something went wrong!"
+  error "VM did not return an exit code file, something went wrong!"
   exit 1
 fi
