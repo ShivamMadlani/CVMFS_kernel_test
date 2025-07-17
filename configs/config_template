@@ -1,0 +1,6 @@
+CVMFS_SERVER_IP=""
+CVMFS_REPOSITORY=""
+CVMFS_SERVER_PUB_KEY=""
+
+DISK_PATH="" (optional, default: ./)
+DISK_SIZE="" (optional, default: 8192M)
