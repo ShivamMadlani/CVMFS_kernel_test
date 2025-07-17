@@ -3,3 +3,4 @@ rootfs/
 *_test
 vm_exit_code.txt
 todo.txt
+*.img
