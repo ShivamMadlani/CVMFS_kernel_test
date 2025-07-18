@@ -1,26 +1,26 @@
 #!/bin/bash
 set -eu
 
+# Change this path to point to your linux source
+KERNEL_DIR="/root/linux"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TEST_SCRIPT="${SCRIPT_DIR}/test.sh"
+VM_EXIT_FILE="/mnt/test/vm_exit_code.txt"
+
+OVERLAY_SETUP="${SCRIPT_DIR}/overlay.sh"
+CVMFS_GUEST_SETUP="${SCRIPT_DIR}/guest/cvmfs_setup.sh"
+
 # ------------------
 # IMPORT LOGGER
 # ------------------
-LOGGING="utils/logging.sh"
+LOGGING="${SCRIPT_DIR}/utils/logging.sh"
 if [ -f "$LOGGING" ]; then
   source "$LOGGING"
 else
   echo "[FATAL] Cannot find logger"
   exit 1
 fi
-
-# Change this path to point to your linux source
-KERNEL_DIR="/root/linux"
-
-CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TEST_SCRIPT="${CURRENT_DIR}/test.sh"
-VM_EXIT_FILE="${CURRENT_DIR}/vm_exit_code.txt"
-
-OVERLAY_SETUP="${CURRENT_DIR}/overlay.sh"
-CVMFS_GUEST_SETUP="${CURRENT_DIR}/guest/cvmfs_setup.sh"
 
 # Move to kernel directory and Build kernel
 cd "${KERNEL_DIR}"
@@ -31,7 +31,7 @@ make olddefconfig > /dev/null
 vng -b > /dev/null
 success "Kernel built"
 
-cd "${CURRENT_DIR}"
+cd "${SCRIPT_DIR}"
 
 # Build test binary
 log "Compiling test file"
@@ -66,16 +66,20 @@ vng \
   "
 
 # Capture the exit code from the VM by reading the exit code file
+mount disk.img /mnt/test
 if [ -f "$VM_EXIT_FILE" ]; then
   VM_EXIT_CODE=$(cat "$VM_EXIT_FILE")
   if [ "$VM_EXIT_CODE" -ne 0 ]; then
     error "Test failed inside VM, marking as bad commit."
+    umount /mnt/test
     exit 1
   else
     success "Test passed inside VM, marking as good commit."
+    umount /mnt/test
     exit 0
   fi
 else
   error "VM did not return an exit code file, something went wrong!"
+  umount /mnt/test
   exit 1
 fi
