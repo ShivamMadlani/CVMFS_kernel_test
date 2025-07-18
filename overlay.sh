@@ -5,7 +5,7 @@ set -eu
 # ------------------
 # IMPORT LOGGER
 # ------------------
-LOGGING="../utils/logging.sh"
+LOGGING="/mnt/utils/logging.sh"
 if [ -f "$LOGGING" ]; then
   source "$LOGGING"
 else
