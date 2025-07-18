@@ -75,7 +75,7 @@ $CVMFS_SERVER_PUB_KEY
 EOF
 
   log "Creating directory for disk mount"
-  mkdir -p /mnt/test
+  mkdir -p /mnt/test/ /mnt/utils/
   
   success "CVMFS configuration completed"
 }
