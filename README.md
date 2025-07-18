@@ -21,7 +21,7 @@ Install these on the host system
 
 1. [Linux kernel source](git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git)
 2. [virtme-ng](https://github.com/arighi/virtme-ng)
-3. [qemu](https://www.qemu.org/download/) - user net support is required
+3. [qemu](https://www.qemu.org/download/) - user net support is required (Run `qemu-system-x86_64 -netdev help` to confirm)
 
 ## Setup
 
