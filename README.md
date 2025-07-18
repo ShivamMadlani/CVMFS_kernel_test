@@ -1,6 +1,6 @@
 # CVMFS Kernel Regression Tester
 
-This repository helps test CVMFS client read functionality across different Linux kernel versions using a lightweight VM environment powered by `virtme-ng` and a minimal Debian root filesystem built with `debootstrap`.
+This repository helps test CVMFS client read functionality across different Linux kernel versions using a lightweight VM environment powered by `virtme-ng`.
 
 The test is designed to work with `git bisect` to identify kernel regressions that affect the ability of a CVMFS client to read files.
 
@@ -21,7 +21,7 @@ Install these on the host system
 
 1. [Linux kernel source](git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git)
 2. [virtme-ng](https://github.com/arighi/virtme-ng)
-3. [qemu](https://www.qemu.org/download/)
+3. [qemu](https://www.qemu.org/download/) - user net support is required
 
 ## Setup
 
@@ -53,6 +53,7 @@ sudo ./setup_cvmfs_client.sh
     b. Using `git bisect`
     To find the first bad kernel commit cd into the kernel source repository:
     ```bash
+    cd linux
     git bisect start
     git bisect bad <bad-commit-or-tag> (e.g. v5.15)
     git bisect good <good-commit-or-tag> (e.g. v5.10)
