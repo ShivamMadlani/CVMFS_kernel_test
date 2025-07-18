@@ -25,11 +25,11 @@ CVMFS_GUEST_SETUP="${CURRENT_DIR}/guest/cvmfs_setup.sh"
 # Move to kernel directory and Build kernel
 cd "${KERNEL_DIR}"
 log "Configuring and Building kernel"
-vng --kconfig 2>/dev/null 2>&1
+vng --kconfig >/dev/null 2>&1
 "${KERNEL_DIR}/scripts/config" --enable CONFIG_EXT4_FS
 make olddefconfig > /dev/null
 vng -b > /dev/null
-success "Kernel built successfully"
+success "Kernel built"
 
 cd "${CURRENT_DIR}"
 
@@ -48,6 +48,9 @@ vng \
   --run "$KERNEL_DIR"/arch/x86/boot/bzImage \
   --pwd \
   --memory 1024 \
+  --rodir=/mnt/utils=./utils \
+  --network user \
+  --disk ./disk.img \
   --exec "
     echo '=====Entering VM====='
     uname -a
