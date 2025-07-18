@@ -1,4 +1,4 @@
-config.sh
+configs/*.sh
 rootfs/
 *_test
 vm_exit_code.txt
