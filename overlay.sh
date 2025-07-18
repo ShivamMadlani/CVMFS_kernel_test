@@ -34,10 +34,12 @@ function clean() {
   log "Unmounting OverlayFS"
   if mountpoint -q "$MERGEDDIR"; then
     umount "$MERGEDDIR"
+  fi
 
   log "Unmounting ext4 disk"
   if mountpoint -q "$EXT_MOUNT"; then
     umount "$EXT_MOUNT"
+  fi
 
   log "Removing directories"
   rm -rf "$BASEDIR"
@@ -45,7 +47,7 @@ function clean() {
   success "Cleanup complete"
 }
 
-if [ "$1" == "clean" ]; then
+if [ "${1:-}" == "clean" ]; then
   clean
   exit 0
 fi
