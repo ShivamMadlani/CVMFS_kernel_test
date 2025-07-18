@@ -4,7 +4,7 @@ set -eu
 # ------------------
 # IMPORT LOGGER
 # ------------------
-LOGGING="../utils/logging.sh"
+LOGGING="utils/logging.sh"
 if [ -f "$LOGGING" ]; then
   source "$LOGGING"
 else
@@ -25,7 +25,7 @@ CVMFS_GUEST_SETUP="${CURRENT_DIR}/guest/cvmfs_setup.sh"
 # Move to kernel directory and Build kernel
 cd "${KERNEL_DIR}"
 log "Configuring and Building kernel"
-vng --kconfig 2>/dev/null
+vng --kconfig 2>/dev/null 2>&1
 "${KERNEL_DIR}/scripts/config" --enable CONFIG_EXT4_FS
 make olddefconfig > /dev/null
 vng -b > /dev/null
@@ -44,24 +44,22 @@ mkfs.ext4 -F disk.img > /dev/null
 
 # Run VM with built kernel
 log "Starting VM"
-virtme-run \
-  --kimg "$KERNEL_DIR"/arch/x86/boot/bzImage \
-  --rw \
+vng \
+  --run "$KERNEL_DIR"/arch/x86/boot/bzImage \
   --pwd \
-  --mods auto \
   --memory 1024 \
-  --script-sh "
-  echo '=====Entering VM====='
-  uname -a
-  echo '=====Configure cvmfs====='
-  $CVMFS_GUEST_SETUP
-  echo '=====Overlaying /cvmfs====='
-  $OVERLAY_SETUP
-  echo '=====Running test====='
-  $TEST_SCRIPT
-  TEST_RESULT=\$?
-  echo \"\$TEST_RESULT\" > $VM_EXIT_FILE
-  echo '=====Exiting VM====='
+  --exec "
+    echo '=====Entering VM====='
+    uname -a
+    echo '=====Configure cvmfs====='
+    $CVMFS_GUEST_SETUP
+    echo '=====Overlaying /cvmfs====='
+    $OVERLAY_SETUP
+    echo '=====Running test====='
+    $TEST_SCRIPT
+    TEST_RESULT=\$?
+    echo \"\$TEST_RESULT\" > $VM_EXIT_FILE
+    echo '=====Exiting VM====='
   "
 
 # Capture the exit code from the VM by reading the exit code file
